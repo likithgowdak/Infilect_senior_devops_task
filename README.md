@@ -1,2 +1,0 @@
-# Infilect_senior_devops_task
-Infilect_senior_devops_task

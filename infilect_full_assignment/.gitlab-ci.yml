@@ -1,0 +1,58 @@
+stages:
+  - backend_install
+  - backend_lint
+  - frontend_install
+  - frontend_lint
+  - docker_build
+
+variables:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
+
+backend_install:
+  stage: backend_install
+  image: python:${PYTHON_VERSION}
+  script:
+    - pip install -r backend/requirements.txt
+  artifacts:
+    paths:
+      - backend/
+    expire_in: 1 hour
+
+backend_lint:
+  stage: backend_lint
+  image: python:${PYTHON_VERSION}
+  script:
+    - echo "Backend Lint Placeholder"
+  needs:
+    - backend_install
+
+frontend_install:
+  stage: frontend_install
+  image: node:${NODE_VERSION}
+  script:
+    - cd frontend && npm install
+  artifacts:
+    paths:
+      - frontend/node_modules/
+    expire_in: 1 hour
+
+frontend_lint:
+  stage: frontend_lint
+  image: node:${NODE_VERSION}
+  script:
+    - echo "Frontend Lint Placeholder"
+  needs:
+    - frontend_install
+
+docker_build:
+  stage: docker_build
+  image: docker:24.0
+  services:
+    - docker:24.0-dind
+  script:
+    - docker build -t backend ./backend
+    - docker build -t frontend ./frontend
+  needs:
+    - backend_lint
+    - frontend_lint
